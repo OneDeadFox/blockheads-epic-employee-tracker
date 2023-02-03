@@ -14,8 +14,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mysql2": "^2.2.5",
-    "inquirer": "^8.2.4"
+    "inquirer": "^8.2.4",
+    "mysql2": "^2.2.5"
   },
   "bugs": {
     "url": "https://github.com/OneDeadFox/blockheads-epic-employee-tracker/issues"

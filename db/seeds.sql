@@ -1,10 +1,10 @@
-INSERT INTO department (name)
+INSERT INTO departments (name)
 VALUES ("Administrasion"),
-       ("Accounting"),
-       ("Customer Service"),
-       ("Phalange Resources");
+        ("Accounting"),
+        ("Customer Service"),
+        ("Phalange Resources");
 
-INSERT INTO role (title, salary, department_id)
+INSERT INTO roles (title, salary, department_id)
 VALUES ("Owner", 500000, 1),
         ("Accounting Manager", 200000, 2),
         ("CS Manager", 100000, 3),
@@ -13,7 +13,7 @@ VALUES ("Owner", 500000, 1),
         ("CR Operator", 40000, 3),
         ("PR Agent", 55000, 4);
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id)
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES ("Blockhead", "Brown", 1, NULL),
         ("Angelhead", "Blue", 2, 1),
         ("Rhombushead", "Brown", 3, 1),
