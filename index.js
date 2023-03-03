@@ -2,8 +2,6 @@ const mysql = require(`mysql2`);
 const inquirer = require(`inquirer`);
 const db = require(`./config/connection`);
 const util = require(`util`);
-const myQuery = util.promisify(db.query);
-//const {views} = require(`./util`);
 
 const init = () => {
     inquirer
@@ -74,7 +72,16 @@ const addClass = async (create) => {
                 })
             })
     } else  if(create === 5){
-        const departments = await getDepartments();
+        const departments = [];
+        db.query(`SELECT name FROM departments`, function (err, res) {
+            if(err){
+                throw err;
+            } else {
+                res.forEach(element => {
+                    departments.push(element.name);
+                });
+            }
+        });
         
         const addRole = await inquirer.prompt([
                 {
@@ -96,7 +103,7 @@ const addClass = async (create) => {
             ]).then((res) => {
                 const title = res.title;
                 const salary = res.salary.match(/[0-9]*(\.[0-9]{0,2})?/g).filter(el => el != '');
-                const departmentId = departmentNames.indexOf(res.role) + 1;
+                const departmentId = departments.indexOf(res.role) + 1;
                 db.query(`INSERT INTO roles(title, salary, department_id) VALUES(?, ?, ?)`, [`${title}`, salary[0], departmentId], function (err, results) {
                     if (err) {
                         console.log(err);
@@ -141,9 +148,6 @@ const addClass = async (create) => {
             }
         });
 
-        console.log(employeesRaw)
-        console.log(rolesRaw)
-        
         const addEmployee = await inquirer.prompt([
                     {
                         type: `input`,
@@ -178,9 +182,6 @@ const addClass = async (create) => {
                     });
                     const managerId = managerObj[0].managerId;
 
-                    console.log(positionId);
-                    console.log(managerId);
-
                     db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES(?, ?, ?, ?)`, [`${res.firstName}`, `${res.lastName}`, positionId, managerId], function (err, results) {
                         if (err) {
                             console.log(err);
@@ -210,7 +211,6 @@ const getDepartments = async () => {
 
 const getNames = async () => {
     const employeeNames = [];
-    console.log('in function');
     db.query(`SELECT first_name, last_name, id FROM employees`,  function (err, res) {
         if(err){
             console.log('oh no!');
@@ -222,9 +222,7 @@ const getNames = async () => {
                     lastName: element.last_name,
                     managerId: element.id
                 });
-                //console.log(element);
             });
-            //console.log(names);
             getRoles(employeeNames);
             return;
         }
@@ -254,7 +252,6 @@ const getRoles = async (names) => {
 const updateClass = async (names, roles) => {   
     
     let employeeNames = names.map(name => `${name.firstName} ${name.lastName}`);
-    console.log(employeeNames);
     let employeeRoles = roles.map(role => role.position);
 
     if(employeeNames === undefined){
@@ -300,7 +297,6 @@ const updateClass = async (names, roles) => {
                 });
                 const employeeId = employeeRaw[0].managerId;
                 const firstName = res.firstName;
-                console.log(typeof(firstName));
                 const lastName = res.lastName;
                 const positionObj = roles.filter(role => role.position === res.position);
                 const positionId = positionObj[0].roleId;
@@ -320,9 +316,9 @@ const updateClass = async (names, roles) => {
                         console.log(`${res.employee} has been has been updated to ${firstName} ${lastName}`);
                     }
                 });
+                init();
+                return;
     })
-    init();
-    return;
 }
 
 init();
